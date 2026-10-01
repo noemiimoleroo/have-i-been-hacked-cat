@@ -42,12 +42,17 @@
   @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   .result h2{margin:0 0 4px;font-size:20px}
   .result p{margin:0 0 8px;line-height:1.5;font-size:15px}
+  .result p.big{font-size:17px}
+  .cap{font-weight:700;color:var(--blue-dark);margin:12px 0 6px!important}
+  .story{display:flex;flex-direction:column;gap:6px}
+  .st{display:flex;gap:10px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:15px;line-height:1.4}
+  .st .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700;font-size:14px}
   .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0;font-size:14px}
   .flow .box{background:#fff;border:2px solid var(--blue);border-radius:10px;padding:6px 12px;font-weight:600}
   .flow .small{background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 10px}
   .flow .arr{color:var(--danger);font-weight:700}
   .steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-  .step{flex:1 1 180px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.4}
+  .step{flex:1 1 180px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:14px;line-height:1.4}
   .step b{display:block;color:var(--blue-dark)}
   .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
   .btn{background:#fff;border:1px solid #b5b5b5;border-radius:6px;padding:8px 14px}
@@ -67,11 +72,11 @@
 <div class="app">
   <div class="alert">
     <span class="pill">ModaClick</span>
-    <span>⚠️ Aquesta botiga online ha patit una <b>filtració de dades</b>. Tu feies servir <b>la mateixa contrasenya</b> a aquests 4 comptes:</span>
+    <span>⚠️ Uns hackers han <b>robat les dades</b> d'aquesta botiga online, <b>també la teva contrasenya</b>.<br>I tu feies servir <b>la mateixa contrasenya</b> en aquests 4 llocs:</span>
   </div>
 
   <h1>Quin compte intentaries protegir primer?</h1>
-  <p class="sub">Toca el compte que protegiries abans.</p>
+  <p class="sub">Toca el que protegiries abans de tots.</p>
 
   <div class="grid" id="grid">
     <button type="button" class="tile" data-id="botiga"><span class="ic">🛒</span><b>Botiga</b></button>
@@ -89,9 +94,9 @@
 (function(){
   var $ = function(id){ return document.getElementById(id); };
   var WHY = {
-    botiga:'Cal canviar-la, però és el compte que ja s\'ha filtrat. El més urgent és tancar la porta a la resta.',
-    m365:'És important, però si algú entra al teu correu pot demanar «He oblidat la contrasenya» i restablir-la igualment.',
-    insta:'Pot ser molt personal, però si algú controla el teu correu pot restablir-la igualment.'
+    botiga:'La botiga és on ha passat el robatori, però aquest no és el compte més important.',
+    m365:'És important, però si un hacker entra al teu correu, també podrà canviar aquesta contrasenya.',
+    insta:'És important, però si un hacker entra al teu correu, també podrà canviar aquesta contrasenya.'
   };
   var tiles = Array.prototype.slice.call(document.querySelectorAll('.tile'));
   function reset(){
@@ -100,13 +105,18 @@
   }
   function good(title){
     return '<h2>'+title+'</h2>'
-      +'<p><b>El correu és la clau de totes les altres:</b> quan oblides una contrasenya, el lloc t\'envia l\'enllaç per canviar-la <b>al correu</b>.</p>'
-      +'<div class="flow"><span class="small">🛒 Botiga</span><span class="small">☁️ Microsoft 365</span><span class="small">📱 Instagram</span>'
-      +'<span class="arr">➜ «He oblidat la contrasenya» ➜</span><span class="box">📧 Correu</span></div>'
+      +'<p class="big">El <b>correu</b> és la <b>clau mestra</b> 🔑 de tots els comptes.</p>'
+      +'<p class="cap">Per què?</p>'
+      +'<div class="story">'
+      +'<div class="st"><span class="n">1</span><span>🕵️ El hacker entra al teu <b>correu</b> amb la contrasenya robada.</span></div>'
+      +'<div class="st"><span class="n">2</span><span>Va a Instagram, Microsoft… i prem <b>«He oblidat la contrasenya»</b>.</span></div>'
+      +'<div class="st"><span class="n">3</span><span>📩 El missatge per crear una contrasenya nova arriba <b>al teu correu</b>… i el hacker el llegeix.</span></div>'
+      +'</div>'
+      +'<p class="cap">Què has de fer?</p>'
       +'<div class="steps">'
-      +'<div class="step"><b>1. Canvia el correu</b>Una contrasenya nova i única.</div>'
-      +'<div class="step"><b>2. Dos passos</b>Activa la verificació en dos passos.</div>'
-      +'<div class="step"><b>3. Canvia la resta</b>Una contrasenya diferent per compte.</div>'
+      +'<div class="step"><b>1. Canvia la contrasenya del correu</b>Posa-n\'hi una de nova.</div>'
+      +'<div class="step"><b>2. Activa el doble pas</b>A més de la contrasenya, et demanarà un codi al mòbil.</div>'
+      +'<div class="step"><b>3. Una contrasenya per lloc</b>No repeteixis la mateixa en tots els comptes.</div>'
       +'</div>'
       +'<div class="actions"><button type="button" class="btn p" id="again">Tornar a començar</button></div>';
   }
@@ -125,7 +135,7 @@
     }
     b.classList.add('wrong');
     var r=$('result'); r.className='result bad show';
-    r.innerHTML='<h2>Gairebé…</h2><p>'+WHY[id]+'</p><p><b>Pensa:</b> on arriben els enllaços per recuperar una contrasenya?</p>'
+    r.innerHTML='<h2>Gairebé…</h2><p>'+WHY[id]+'</p><p class="big"><b>Pista:</b> quan oblides una contrasenya, <b>on t\'arriba el missatge</b> per crear-ne una de nova?</p>'
       +'<div class="actions"><button type="button" class="btn" id="sol">Veure solució</button><button type="button" class="btn p" id="retry">Provar-ho de nou</button></div>';
     $('retry').onclick=reset;
     $('sol').onclick=function(){ reset(); tiles[1].classList.add('right'); showGood('Solució'); };
