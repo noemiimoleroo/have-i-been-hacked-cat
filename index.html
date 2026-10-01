@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Has estat hackejat? – Quin compte protegeixes primer?</title>
+<style>
+  :root{
+    --blue:#0f6cbd; --blue-dark:#0b5a9d; --bg:#f3f4f6; --line:#dcdcdc;
+    --text:#1f1f1f; --muted:#5f5f5f; --danger:#c4314b; --ok:#107c10; --ok-bg:#eefaee; --warn-bg:#fff6dd; --warn:#8a6100;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;color:var(--text);background:var(--bg);color-scheme:light}
+  button{font:inherit;cursor:pointer}
+  .app{max-width:820px;margin:0 auto;padding:14px 16px 24px;text-align:center}
+
+  /* Avís petit */
+  .alert{display:flex;align-items:center;gap:10px;justify-content:center;flex-wrap:wrap;background:#fdecef;border:1px solid #f3c1ca;color:#7a1a2b;border-radius:10px;padding:10px 14px;font-size:14px;line-height:1.4}
+  .alert b{color:var(--danger)}
+  .pill{background:var(--danger);color:#fff;border-radius:999px;padding:2px 10px;font-weight:700;font-size:12px;letter-spacing:.3px}
+
+  /* Pregunta = protagonista */
+  h1{margin:22px 0 4px;font-size:30px;line-height:1.2}
+  .sub{margin:0 0 18px;color:var(--muted);font-size:15px}
+
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .tile{background:#fff;border:3px solid transparent;border-radius:16px;padding:18px 8px 14px;color:inherit;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .12s,box-shadow .12s,border-color .12s}
+  .tile:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(15,108,189,.22);border-color:var(--blue)}
+  .tile .ic{display:block;font-size:46px;line-height:1.1;margin-bottom:6px}
+  .tile b{font-size:16px}
+  .tile.sel{border-color:var(--blue);background:#ebf3fc}
+  .tile.right{border-color:var(--ok);background:var(--ok-bg)}
+  .tile.wrong{border-color:#e0a800;background:var(--warn-bg)}
+  .tile:disabled{cursor:default;transform:none}
+
+  /* Resultat en línia */
+  .result{margin-top:18px;text-align:left;border-radius:14px;padding:14px 16px;display:none;animation:in .25s ease}
+  .result.show{display:block}
+  .result.good{background:var(--ok-bg);border:1px solid #bfe3bf}
+  .result.bad{background:var(--warn-bg);border:1px solid #f0dc9a}
+  @keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .result h2{margin:0 0 4px;font-size:20px}
+  .result p{margin:0 0 8px;line-height:1.5;font-size:15px}
+  .flow{display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;margin:10px 0;font-size:14px}
+  .flow .box{background:#fff;border:2px solid var(--blue);border-radius:10px;padding:6px 12px;font-weight:600}
+  .flow .small{background:#fff;border:1px solid var(--line);border-radius:8px;padding:5px 10px}
+  .flow .arr{color:var(--danger);font-weight:700}
+  .steps{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+  .step{flex:1 1 180px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:13.5px;line-height:1.4}
+  .step b{display:block;color:var(--blue-dark)}
+  .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;flex-wrap:wrap}
+  .btn{background:#fff;border:1px solid #b5b5b5;border-radius:6px;padding:8px 14px}
+  .btn:hover{background:#f1f1f1}
+  .btn.p{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:600}
+  .btn.p:hover{background:var(--blue-dark)}
+  .link{background:none;border:0;color:var(--blue);text-decoration:underline;margin-top:16px;font-size:13px}
+
+  @media (max-width:640px){
+    h1{font-size:23px}
+    .grid{grid-template-columns:1fr 1fr}
+    .tile .ic{font-size:40px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="alert">
+    <span class="pill">ModaClick</span>
+    <span>⚠️ Aquesta botiga online ha patit una <b>filtració de dades</b>. Tu feies servir <b>la mateixa contrasenya</b> a aquests 4 comptes:</span>
+  </div>
+
+  <h1>Quin compte intentaries protegir primer?</h1>
+  <p class="sub">Toca el compte que protegiries abans.</p>
+
+  <div class="grid" id="grid">
+    <button type="button" class="tile" data-id="botiga"><span class="ic">🛒</span><b>Botiga</b></button>
+    <button type="button" class="tile" data-id="correu"><span class="ic">📧</span><b>Correu</b></button>
+    <button type="button" class="tile" data-id="m365"><span class="ic">☁️</span><b>Microsoft 365</b></button>
+    <button type="button" class="tile" data-id="insta"><span class="ic">📱</span><b>Instagram</b></button>
+  </div>
+
+  <div class="result" id="result" role="status" aria-live="polite"></div>
+
+  <button type="button" class="link" id="solBtn">Veure solució</button>
+</div>
+
+<script>
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var WHY = {
+    botiga:'Cal canviar-la, però és el compte que ja s\'ha filtrat. El més urgent és tancar la porta a la resta.',
+    m365:'És important, però si algú entra al teu correu pot demanar «He oblidat la contrasenya» i restablir-la igualment.',
+    insta:'Pot ser molt personal, però si algú controla el teu correu pot restablir-la igualment.'
+  };
+  var tiles = Array.prototype.slice.call(document.querySelectorAll('.tile'));
+  function reset(){
+    tiles.forEach(function(t){ t.className='tile'; t.disabled=false; });
+    $('result').className='result'; $('result').innerHTML='';
+  }
+  function good(title){
+    return '<h2>'+title+'</h2>'
+      +'<p><b>El correu és la clau de totes les altres:</b> quan oblides una contrasenya, el lloc t\'envia l\'enllaç per canviar-la <b>al correu</b>.</p>'
+      +'<div class="flow"><span class="small">🛒 Botiga</span><span class="small">☁️ Microsoft 365</span><span class="small">📱 Instagram</span>'
+      +'<span class="arr">➜ «He oblidat la contrasenya» ➜</span><span class="box">📧 Correu</span></div>'
+      +'<div class="steps">'
+      +'<div class="step"><b>1. Canvia el correu</b>Una contrasenya nova i única.</div>'
+      +'<div class="step"><b>2. Dos passos</b>Activa la verificació en dos passos.</div>'
+      +'<div class="step"><b>3. Canvia la resta</b>Una contrasenya diferent per compte.</div>'
+      +'</div>'
+      +'<div class="actions"><button type="button" class="btn p" id="again">Tornar a començar</button></div>';
+  }
+  function showGood(title){
+    var r=$('result'); r.className='result good show'; r.innerHTML=good(title);
+    $('again').onclick=reset;
+    r.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+  $('grid').addEventListener('click',function(e){
+    var b=e.target.closest('.tile'); if(!b) return;
+    var id=b.dataset.id;
+    reset();
+    if(id==='correu'){
+      b.classList.add('right'); tiles.forEach(function(t){ t.disabled=true; });
+      showGood('🎉 Correcte!'); return;
+    }
+    b.classList.add('wrong');
+    var r=$('result'); r.className='result bad show';
+    r.innerHTML='<h2>Gairebé…</h2><p>'+WHY[id]+'</p><p><b>Pensa:</b> on arriben els enllaços per recuperar una contrasenya?</p>'
+      +'<div class="actions"><button type="button" class="btn" id="sol">Veure solució</button><button type="button" class="btn p" id="retry">Provar-ho de nou</button></div>';
+    $('retry').onclick=reset;
+    $('sol').onclick=function(){ reset(); tiles[1].classList.add('right'); showGood('Solució'); };
+    r.scrollIntoView({behavior:'smooth',block:'nearest'});
+  });
+  $('solBtn').addEventListener('click',function(){
+    reset(); tiles[1].classList.add('right'); showGood('Solució');
+  });
+})();
+</script>
+</body>
+</html>
